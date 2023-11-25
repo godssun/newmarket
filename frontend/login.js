@@ -1,23 +1,49 @@
 const form = document.querySelector("#login-form");
 
-async function handleSubmit(event) {
+let accessToken = null;
+
+const handleSubmit = async (event) => {
   event.preventDefault();
   const formData = new FormData(form);
   const sha256Password = sha256(formData.get("password"));
   formData.set("password", sha256Password);
 
   const res = await fetch("/login", {
-    method: "post",
+    method: "POST",
     body: formData,
   });
 
   const data = await res.json();
+  accessToken = data.access_token;
+  console.log(accessToken);
 
-  console.log("토큰!!!", data);
-  if (res.status === 200) {
-    alert("로그인 성공!!");
-    console.log(res.status);
-  } else if (res.status === 401) alert("틀렸어 병시나");
-}
+  const infoDiv = document.querySelector("#info");
+  infoDiv.innerText = "success login!!";
+  window.localStorage.setItem("token", accessToken);
+  alert("succes login");
+
+  window.location.pathname = "/";
+
+  //   const btn = document.createElement("button");
+  //   btn.innerText = "get items";
+  //   btn.addEventListener("click", async () => {
+  //     const res = await fetch("/items", {
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //       },
+  //     });
+  //     const data = await res.json();
+  //     console.log(data);
+  //   });
+  infoDiv.appendChild(btn);
+
+  //   if (res.status === 200) {
+  //     alert("success login!!");
+  //   } else if (res.status === 401) {
+  //     alert("Wrong");
+  //   } else {
+  //     console.error(`Unexpected status code: ${res.status}`);
+  //   }
+};
 
 form.addEventListener("submit", handleSubmit);
